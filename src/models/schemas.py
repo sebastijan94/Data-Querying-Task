@@ -6,7 +6,7 @@ class TagSchema(BaseModel):
     name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CommentSchema(BaseModel):
     id: int
@@ -15,7 +15,7 @@ class CommentSchema(BaseModel):
     post_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserSchema(BaseModel):
     id: int
@@ -24,7 +24,7 @@ class UserSchema(BaseModel):
     comments: Optional[List[CommentSchema]] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PostSchema(BaseModel):
     id: int
@@ -36,7 +36,7 @@ class PostSchema(BaseModel):
     comments: Optional[List[CommentSchema]] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 UserSchema.model_rebuild()
 PostSchema.model_rebuild()

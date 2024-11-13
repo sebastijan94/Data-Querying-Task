@@ -1,61 +1,25 @@
-from typing import List, Optional
-from fastapi import FastAPI, Depends, Query, HTTPException
-from sqlalchemy.orm import Session, joinedload
-from src.db import SessionLocal
-from src.models import models
-from src.models.schemas import PostSchema, UserSchema
+from fastapi import FastAPI
+from sqlalchemy.exc import OperationalError
+from src.db import engine
+from alembic.config import Config
+from alembic import command
+from src.routers import posts, users
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+def run_migrations():
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
 
-def get_db():
-    db = SessionLocal()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     try:
-        yield db
-    finally:
-        db.close()
+        with engine.connect() as conn:
+            run_migrations()
+    except OperationalError:
+        print("Database connection failed. Ensure the database is running.")
+    
+    yield 
 
-@app.get("/api/posts", response_model=List[PostSchema])
-def get_posts(status: Optional[str] = Query(None), include: Optional[List[str]] = Query([]), db: Session = Depends(get_db)):
-    query = db.query(models.Post)
-    
-    if status:
-        query = query.filter(models.Post.status == status)
-    
-    if "tags" in include:
-        query = query.options(joinedload(models.Post.tags))
-    if "user" in include:
-        query = query.options(joinedload(models.Post.user))
-    if "comments" in include:
-        query = query.options(joinedload(models.Post.comments))
-    
-    return query.all()
-
-@app.get("/api/posts/{post_id}", response_model=PostSchema)
-def get_post(post_id: int, include: Optional[List[str]] = Query([]), db: Session = Depends(get_db)):
-    query = db.query(models.Post).filter(models.Post.id == post_id)
-    
-    if "tags" in include:
-        query = query.options(joinedload(models.Post.tags))
-    if "user" in include:
-        query = query.options(joinedload(models.Post.user))
-    if "comments" in include:
-        query = query.options(joinedload(models.Post.comments))
-    
-    post = query.first()
-    if not post:
-        raise HTTPException(status_code=404, detail="Post not found")
-    return post
-
-@app.get("/api/users/{user_id}", response_model=UserSchema)
-def get_user(user_id: int, include: Optional[List[str]] = Query([]), db: Session = Depends(get_db)):
-    query = db.query(models.User).filter(models.User.id == user_id)
-    
-    if "posts" in include:
-        query = query.options(joinedload(models.User.posts))
-    if "comments" in include:
-        query = query.options(joinedload(models.User.comments))
-    
-    user = query.first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+app = FastAPI(lifespan=lifespan)
+app.include_router(posts.router)
+app.include_router(users.router)

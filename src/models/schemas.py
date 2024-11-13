@@ -17,10 +17,26 @@ class CommentSchema(BaseModel):
     class Config:
         from_attributes = True
 
+class UserSummarySchema(BaseModel):
+    id: int
+    username: str
+
+    class Config:
+        from_attributes = True
+
+
+class PostSummarySchema(BaseModel):
+    id: int
+    title: str
+    content: str
+
+    class Config:
+        from_attributes = True
+
 class UserSchema(BaseModel):
     id: int
     username: str
-    posts: Optional[List['PostSchema']] = []
+    posts: Optional[List[PostSummarySchema]] = []
     comments: Optional[List[CommentSchema]] = []
 
     class Config:
@@ -31,12 +47,9 @@ class PostSchema(BaseModel):
     title: str
     content: str
     user_id: int
-    user: Optional[UserSchema] = None
+    user: Optional[UserSummarySchema] = None
     tags: Optional[List[TagSchema]] = []
     comments: Optional[List[CommentSchema]] = []
 
     class Config:
         from_attributes = True
-
-UserSchema.model_rebuild()
-PostSchema.model_rebuild()

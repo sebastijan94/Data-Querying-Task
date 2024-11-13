@@ -1,20 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
-from src.db import SessionLocal
+from src.db import get_db
 from src.models import models
 from src.models.schemas import UserSchema
 
 router = APIRouter(prefix="/api/users")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-@router.get("/{user_id}", response_model=UserSchema)
+@router.get("/{user_id}")
 def get_user(
     user_id: int, 
     include: Optional[List[str]] = Query([]), 
@@ -28,6 +21,8 @@ def get_user(
         query = query.options(joinedload(models.User.comments))
     
     user = query.first()
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return user
+    
+    return UserSchema.model_validate(user).model_dump(exclude_defaults=True)

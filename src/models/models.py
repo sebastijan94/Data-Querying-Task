@@ -16,8 +16,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
 
-    posts = relationship("Post", back_populates="user")
-    comments = relationship("Comment", back_populates="user")
+    posts = relationship("Post", back_populates="user", lazy="noload")
+    comments = relationship("Comment", back_populates="user", lazy="noload")
 
 class Post(Base):
     __tablename__ = "posts"
@@ -29,9 +29,9 @@ class Post(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"))
 
-    user = relationship("User", back_populates="posts")
-    comments = relationship("Comment", back_populates="post")
-    tags = relationship("Tag", secondary=post_tags, back_populates="posts")
+    user = relationship("User", back_populates="posts", lazy="noload")
+    comments = relationship("Comment", back_populates="post", lazy="noload")
+    tags = relationship("Tag", secondary=post_tags, back_populates="posts", lazy="noload")
 
 class Comment(Base):
     __tablename__ = "comments"
@@ -42,8 +42,8 @@ class Comment(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     post_id = Column(Integer, ForeignKey("posts.id"))
 
-    user = relationship("User", back_populates="comments")
-    post = relationship("Post", back_populates="comments")
+    user = relationship("User", back_populates="comments", lazy="noload")
+    post = relationship("Post", back_populates="comments", lazy="noload")
 
 class Tag(Base):
     __tablename__ = "tags"
@@ -51,4 +51,4 @@ class Tag(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
 
-    posts = relationship("Post", secondary=post_tags, back_populates="tags")
+    posts = relationship("Post", secondary=post_tags, back_populates="tags", lazy="noload")

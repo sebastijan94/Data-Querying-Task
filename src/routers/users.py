@@ -4,6 +4,7 @@ from typing import List, Optional
 from src.db import get_db
 from src.models import models
 from src.models.schemas import UserSchema
+from src.utils.validators import validate_include_param
 
 router = APIRouter(prefix="/api/users")
 
@@ -13,6 +14,8 @@ def get_user(
     include: Optional[List[str]] = Query([]), 
     db: Session = Depends(get_db)
 ):
+    validate_include_param(include)
+
     query = db.query(models.User).filter(models.User.id == user_id)
     
     if "posts" in include:

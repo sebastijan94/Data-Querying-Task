@@ -4,15 +4,18 @@ from typing import List, Optional
 from src.db import get_db
 from src.models import models
 from src.models.schemas import PostSchema
+from src.utils.validators import validate_include_param
 
 router = APIRouter(prefix="/api/posts")
 
 @router.get("/")
 def get_posts(
-    status: Optional[str] = Query(None), 
+    status: Optional[str] = Query(None, regex="^(published|draft|archived)$"),
     include: Optional[List[str]] = Query([]), 
     db: Session = Depends(get_db)
 ):
+    validate_include_param(include)
+
     query = db.query(models.Post)
     
     if status:
@@ -35,6 +38,8 @@ def get_post(
     include: Optional[List[str]] = Query([]), 
     db: Session = Depends(get_db)
 ):
+    validate_include_param(include)
+
     query = db.query(models.Post).filter(models.Post.id == post_id)
     
     if "tags" in include:

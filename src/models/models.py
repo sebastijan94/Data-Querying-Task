@@ -25,6 +25,7 @@ class Post(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True, nullable=False)
     content = Column(String, nullable=False)
+    status = Column(String, nullable=False)
 
     user_id = Column(Integer, ForeignKey("users.id"))
 

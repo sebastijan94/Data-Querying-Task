@@ -36,8 +36,8 @@ def get_user(
     query = db.query(models.User).filter(models.User.id == user_id)
     
     for field in include:
-        if field in RELATIONSHIP_LOADERS:
-            query = query.options(joinedload(RELATIONSHIP_LOADERS[field]))
+        if field in RELATIONSHIP_LOADERS["User"]:
+            query = query.options(joinedload(RELATIONSHIP_LOADERS["User"][field]))
     
     user = query.first()
 

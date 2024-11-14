@@ -10,8 +10,13 @@ ALLOWED_INCLUDES_USERS = {"posts", "comments"}
 
 # Mapping of include fields to SQLAlchemy relationship attributes
 RELATIONSHIP_LOADERS = {
-    "tags": models.Post.tags,
-    "user": models.Post.user,
-    "comments": models.Post.comments,
-    "posts": models.User.posts,
+    "User": {
+        "posts": models.User.posts,
+        "comments": models.User.comments,
+    },
+    "Post": {
+        "tags": models.Post.tags,
+        "user": models.Post.user,
+        "comments": models.Post.comments,
+    },
 }

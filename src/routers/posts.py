@@ -39,8 +39,8 @@ def get_posts(
         query = query.filter(models.Post.status == status)
     
     for field in include:
-        if field in RELATIONSHIP_LOADERS:
-            query = query.options(joinedload(RELATIONSHIP_LOADERS[field]))
+        if field in RELATIONSHIP_LOADERS["Post"]:
+            query = query.options(joinedload(RELATIONSHIP_LOADERS["Post"][field]))
     
     posts = query.all()
     return [PostSchema.model_validate(post).model_dump(exclude_defaults=True) for post in posts]
@@ -68,8 +68,8 @@ def get_post(
     query = db.query(models.Post).filter(models.Post.id == post_id)
     
     for field in include:
-        if field in RELATIONSHIP_LOADERS:
-            query = query.options(joinedload(RELATIONSHIP_LOADERS[field]))
+        if field in RELATIONSHIP_LOADERS["Post"]:
+            query = query.options(joinedload(RELATIONSHIP_LOADERS["Post"][field]))
     
     post = query.first()
     if not post:

@@ -30,7 +30,7 @@ cd Data-Querying-Task
 Create a `.env` file in the root directory and define the `DATABASE_URL` variable for PostgreSQL. You can use following data:
 
 ```dotenv
-DATABASE_URL=postgresql://db_user:secure_password123!@db/fastapi_app_db
+DATABASE_URL=postgresql://db_user:secure_password123!@localhost/fastapi_app_db
 ```
 
 ### 3. Run PostgreSQL with Docker Compose

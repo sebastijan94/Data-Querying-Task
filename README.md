@@ -38,7 +38,7 @@ DATABASE_URL=postgresql://db_user:secure_password123!@localhost/fastapi_app_db
 Docker Compose will handle setting up the PostgreSQL database.
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 4. Run the FastAPI Application

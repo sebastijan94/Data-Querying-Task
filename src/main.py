@@ -10,15 +10,13 @@ def run_migrations():
     alembic_cfg = Config("alembic.ini")
     command.upgrade(alembic_cfg, "head")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    try:
-        with engine.connect() as conn:
-            run_migrations()
-    except OperationalError:
-        print("Database connection failed. Ensure the database is running.")
-    yield
-
 app = FastAPI()
+
+try:
+    with engine.connect() as conn:
+        run_migrations()
+except OperationalError:
+    print("Database connection failed. Ensure the database is running.")
+
 app.include_router(posts.router)
 app.include_router(users.router)

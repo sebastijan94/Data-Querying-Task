@@ -16,7 +16,7 @@ def test_get_user_with_valid_include(mock_db):
     mock_db.query(models.User).filter(id=1).first.return_value = mock_user
     mock_db.query().filter().options.return_value = mock_db.query().filter()
 
-    response = client.get("/api/users/1?include=posts&include=comments")
+    response = client.get("/api/users/1?include=posts,comments")
 
     assert response.status_code == 200
     user_data = response.json()

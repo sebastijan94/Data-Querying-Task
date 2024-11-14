@@ -5,16 +5,18 @@ from src.db import get_db
 from src.models import models
 from src.models.schemas import UserSchema
 from src.utils.validators import validate_include_param
+from src.utils.constants import ALLOWED_INCLUDES_USERS
 
 router = APIRouter(prefix="/api/users")
 
 @router.get("/{user_id}")
 def get_user(
     user_id: int, 
-    include: Optional[List[str]] = Query([]), 
+    include: Optional[str] = Query(""), 
     db: Session = Depends(get_db)
 ):
-    validate_include_param(include)
+    include = [item.strip() for item in include.split(",")] if include else []
+    validate_include_param(include, ALLOWED_INCLUDES_USERS)
 
     query = db.query(models.User).filter(models.User.id == user_id)
     

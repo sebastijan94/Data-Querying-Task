@@ -1,12 +1,7 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 from typing import List
-from src.utils.constants import ALLOWED_INCLUDES
 
-def validate_include_param(include: List[str]):
-    invalid_fields = [field for field in include if field not in ALLOWED_INCLUDES]
+def validate_include_param(include: List[str], allowed_includes: List[str]):
+    invalid_fields = set(include) - set(allowed_includes)
     if invalid_fields:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid fields in include parameter: {', '.join(invalid_fields)}. "
-                   f"Allowed values are: {', '.join(ALLOWED_INCLUDES)}."
-        )
+        raise HTTPException(status_code=400, detail=f"Invalid fields in include parameter: {invalid_fields}")

@@ -5,16 +5,18 @@ from src.db import get_db
 from src.models import models
 from src.models.schemas import PostSchema
 from src.utils.validators import validate_include_param
+from src.utils.constants import ALLOWED_INCLUDES_POSTS
 
 router = APIRouter(prefix="/api/posts")
 
 @router.get("/")
 def get_posts(
     status: Optional[str] = Query(None, pattern="^(published|draft|archived)$"),
-    include: Optional[List[str]] = Query([]), 
+    include: Optional[str] = Query(""), 
     db: Session = Depends(get_db)
 ):
-    validate_include_param(include)
+    include = [item.strip() for item in include.split(",")] if include else []
+    validate_include_param(include, ALLOWED_INCLUDES_POSTS)
 
     query = db.query(models.Post)
     
@@ -35,10 +37,11 @@ def get_posts(
 @router.get("/{post_id}")
 def get_post(
     post_id: int, 
-    include: Optional[List[str]] = Query([]), 
+    include: Optional[str] = Query(""), 
     db: Session = Depends(get_db)
 ):
-    validate_include_param(include)
+    include = [item.strip() for item in include.split(",")] if include else []
+    validate_include_param(include, ALLOWED_INCLUDES_POSTS)
 
     query = db.query(models.Post).filter(models.Post.id == post_id)
     

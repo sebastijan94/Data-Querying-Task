@@ -71,7 +71,7 @@ def test_get_post_with_include_all(mock_db):
     )
     mock_db.query().filter().options.return_value = mock_db.query().filter()
 
-    response = client.get("/api/posts/1?include=user&include=tags&include=comments")
+    response = client.get("/api/posts/1?include=user,tags,comments")
 
     assert response.status_code == 200
     data = response.json()
@@ -122,7 +122,7 @@ def test_get_posts_with_include(mock_db):
     ]
     mock_db.query().options.return_value = mock_db.query()
 
-    response = client.get("/api/posts?include=tags&include=user")
+    response = client.get("/api/posts?include=tags,user")
 
     assert response.status_code == 200
     data = response.json()

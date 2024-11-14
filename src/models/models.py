@@ -1,8 +1,13 @@
+"""
+This module defines the SQLAlchemy models representing database tables for the application,
+including users, posts, comments, and tags, as well as their relationships.
+"""
+
 from sqlalchemy import Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from src.base import Base
 
-
+# Association table for post-tag many-to-many relationship
 post_tags = Table(
     "post_tags",
     Base.metadata,

@@ -1,3 +1,7 @@
+"""
+Pydantic schemas for API request and response models.
+"""
+
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -23,7 +27,6 @@ class UserSummarySchema(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class PostSummarySchema(BaseModel):
     id: int

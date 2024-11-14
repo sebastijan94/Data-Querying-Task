@@ -1,3 +1,7 @@
+"""
+Tests for the user-related API endpoints.
+"""
+
 from fastapi.testclient import TestClient
 from unittest.mock import MagicMock
 from src.main import app
@@ -7,6 +11,7 @@ from src.models import models
 client = TestClient(app)
 
 def test_get_user_with_valid_include(mock_db):
+    """Test retrieval of a user with valid include fields: posts and comments."""
     mock_user = models.User(id=1, username="test_user")
     mock_post = models.Post(id=1, title="Post Title", content="Post Content", user_id=1)
     mock_comment = models.Comment(id=1, content="Great post!", user_id=1, post_id=1)
@@ -27,12 +32,14 @@ def test_get_user_with_valid_include(mock_db):
     assert user_data["comments"][0]["content"] == "Great post!"
 
 def test_get_user_invalid_include():
+    """Test retrieval of a user with an invalid include field, expecting a 400 error."""
     response = client.get("/api/users/1?include=invalid_field")
 
     assert response.status_code == 400
     assert "Invalid fields in include parameter" in response.json()["detail"]
 
 def test_get_user_not_found(mock_db):
+    """Test retrieval of a non-existent user, expecting a 404 error."""
     mock_db.query(models.User).filter(id=9999).first.return_value = None
 
     response = client.get("/api/users/9999")
@@ -41,6 +48,7 @@ def test_get_user_not_found(mock_db):
     assert response.json()["detail"] == "User not found"
 
 def test_get_user_no_include(mock_db):
+    """Test retrieval of a user without including related fields."""
     mock_user = models.User(id=1, username="test_user")
     mock_db.query(models.User).filter(id=1).first.return_value = mock_user
 

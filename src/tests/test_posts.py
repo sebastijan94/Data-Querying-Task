@@ -1,3 +1,7 @@
+"""
+Tests for the post-related API endpoints.
+"""
+
 from fastapi.testclient import TestClient
 from unittest.mock import MagicMock
 from src.main import app
@@ -7,6 +11,7 @@ from src.models import models
 client = TestClient(app)
 
 def test_get_post_no_include(mock_db):
+    """Test retrieval of a post without including related fields."""
     mock_db.query(models.Post).filter(id=1).first.return_value = models.Post(
         id=1, title="Post 1", content="Content 1", status="draft", user_id=1
     )
@@ -20,6 +25,7 @@ def test_get_post_no_include(mock_db):
     assert "comments" not in data
 
 def test_get_post_with_include_user(mock_db):
+    """Test retrieval of a post including the user field."""
     mock_user = models.User(id=1, username="test_user")
     mock_db.query(models.Post).filter(id=1).first.return_value = models.Post(
         id=1, title="Post 1", content="Content 1", status="draft", user_id=1, user=mock_user
@@ -34,6 +40,7 @@ def test_get_post_with_include_user(mock_db):
     assert data["user"]["username"] == "test_user"
 
 def test_get_post_with_include_tags(mock_db):
+    """Test retrieval of a post including tags."""
     mock_tag = models.Tag(id=1, name="Sample Tag")
     mock_db.query(models.Post).filter(id=1).first.return_value = models.Post(
         id=1, title="Post 1", content="Content 1", status="draft", user_id=1, tags=[mock_tag]
@@ -48,6 +55,7 @@ def test_get_post_with_include_tags(mock_db):
     assert data["tags"][0]["name"] == "Sample Tag"
 
 def test_get_post_with_include_comments(mock_db):
+    """Test retrieval of a post including comments."""
     mock_comment = models.Comment(id=1, content="Great post!", user_id=1, post_id=1)
     mock_db.query(models.Post).filter(id=1).first.return_value = models.Post(
         id=1, title="Post 1", content="Content 1", status="draft", user_id=1, comments=[mock_comment]
@@ -62,6 +70,7 @@ def test_get_post_with_include_comments(mock_db):
     assert data["comments"][0]["content"] == "Great post!"
 
 def test_get_post_with_include_all(mock_db):
+    """Test retrieval of a post including all related fields: user, tags, comments."""
     mock_user = models.User(id=1, username="test_user")
     mock_tag = models.Tag(id=1, name="Sample Tag")
     mock_comment = models.Comment(id=1, content="Great post!", user_id=1, post_id=1)
@@ -83,6 +92,7 @@ def test_get_post_with_include_all(mock_db):
     assert data["comments"][0]["content"] == "Great post!"
 
 def test_get_posts_no_include(mock_db):
+    """Test retrieval of all posts without including related fields."""
     mock_db.query(models.Post).all.return_value = [
         models.Post(id=1, title="Post 1", content="Content 1", status="draft", user_id=1),
         models.Post(id=2, title="Post 2", content="Content 2", status="published", user_id=2)
@@ -98,6 +108,7 @@ def test_get_posts_no_include(mock_db):
     assert "user" not in data[0]
 
 def test_get_posts_with_include(mock_db):
+    """Test retrieval of all posts with related fields: tags, user."""
     mock_user = models.User(id=1, username="test_user")
     mock_tag = models.Tag(id=1, name="Sample Tag")
     mock_db.query(models.Post).all.return_value = [

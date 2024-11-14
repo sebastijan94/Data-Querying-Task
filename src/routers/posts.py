@@ -1,3 +1,7 @@
+"""
+Post-related API endpoints.
+"""
+
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
@@ -15,6 +19,17 @@ def get_posts(
     include: Optional[str] = Query(""), 
     db: Session = Depends(get_db)
 ):
+    """
+    Retrieve a list of posts with optional filters and related data.
+
+    Parameters:
+        status (Optional[str]): Filter posts by status (e.g., "published", "draft", "archived").
+        include (Optional[str]): Comma-separated list of related data to include (e.g., "tags,user,comments").
+        db (Session): Database session dependency.
+
+    Returns:
+        List[dict]: List of posts with specified filters and relationships included.
+    """
     include = [item.strip() for item in include.split(",")] if include else []
     validate_include_param(include, ALLOWED_INCLUDES_POSTS)
 
@@ -28,7 +43,6 @@ def get_posts(
             query = query.options(joinedload(RELATIONSHIP_LOADERS[field]))
     
     posts = query.all()
-    
     return [PostSchema.model_validate(post).model_dump(exclude_defaults=True) for post in posts]
 
 @router.get("/{post_id}")
@@ -37,6 +51,17 @@ def get_post(
     include: Optional[str] = Query(""), 
     db: Session = Depends(get_db)
 ):
+    """
+    Retrieve a specific post by ID, optionally including related data.
+
+    Parameters:
+        post_id (int): The unique ID of the post to retrieve.
+        include (Optional[str]): Comma-separated list of related data to include (e.g., "tags,user,comments").
+        db (Session): Database session dependency.
+
+    Returns:
+        dict: The post details with specified relationships included.
+    """
     include = [item.strip() for item in include.split(",")] if include else []
     validate_include_param(include, ALLOWED_INCLUDES_POSTS)
 

@@ -1,3 +1,7 @@
+"""
+User-related API endpoints.
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
@@ -15,6 +19,17 @@ def get_user(
     include: Optional[str] = Query(""), 
     db: Session = Depends(get_db)
 ):
+    """
+    Retrieve user details by user ID, optionally including related data.
+
+    Parameters:
+        user_id (int): The unique ID of the user to retrieve.
+        include (Optional[str]): Comma-separated list of related data to include (e.g., "posts,comments").
+        db (Session): Database session dependency.
+
+    Returns:
+        dict: User details with specified related data included.
+    """
     include = [item.strip() for item in include.split(",")] if include else []
     validate_include_param(include, ALLOWED_INCLUDES_USERS)
 

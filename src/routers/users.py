@@ -5,7 +5,7 @@ from src.db import get_db
 from src.models import models
 from src.models.schemas import UserSchema
 from src.utils.validators import validate_include_param
-from src.utils.constants import ALLOWED_INCLUDES_USERS
+from src.utils.constants import ALLOWED_INCLUDES_USERS, RELATIONSHIP_LOADERS
 
 router = APIRouter(prefix="/api/users")
 
@@ -20,10 +20,9 @@ def get_user(
 
     query = db.query(models.User).filter(models.User.id == user_id)
     
-    if "posts" in include:
-        query = query.options(joinedload(models.User.posts))
-    if "comments" in include:
-        query = query.options(joinedload(models.User.comments))
+    for field in include:
+        if field in RELATIONSHIP_LOADERS:
+            query = query.options(joinedload(RELATIONSHIP_LOADERS[field]))
     
     user = query.first()
 

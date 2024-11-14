@@ -5,7 +5,7 @@ from src.db import get_db
 from src.models import models
 from src.models.schemas import PostSchema
 from src.utils.validators import validate_include_param
-from src.utils.constants import ALLOWED_INCLUDES_POSTS
+from src.utils.constants import ALLOWED_INCLUDES_POSTS, RELATIONSHIP_LOADERS
 
 router = APIRouter(prefix="/api/posts")
 
@@ -23,12 +23,9 @@ def get_posts(
     if status:
         query = query.filter(models.Post.status == status)
     
-    if "tags" in include:
-        query = query.options(joinedload(models.Post.tags))
-    if "user" in include:
-        query = query.options(joinedload(models.Post.user))
-    if "comments" in include:
-        query = query.options(joinedload(models.Post.comments))
+    for field in include:
+        if field in RELATIONSHIP_LOADERS:
+            query = query.options(joinedload(RELATIONSHIP_LOADERS[field]))
     
     posts = query.all()
     
@@ -45,12 +42,9 @@ def get_post(
 
     query = db.query(models.Post).filter(models.Post.id == post_id)
     
-    if "tags" in include:
-        query = query.options(joinedload(models.Post.tags))
-    if "user" in include:
-        query = query.options(joinedload(models.Post.user))
-    if "comments" in include:
-        query = query.options(joinedload(models.Post.comments))
+    for field in include:
+        if field in RELATIONSHIP_LOADERS:
+            query = query.options(joinedload(RELATIONSHIP_LOADERS[field]))
     
     post = query.first()
     if not post:

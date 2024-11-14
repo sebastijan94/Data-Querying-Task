@@ -10,7 +10,7 @@ router = APIRouter(prefix="/api/posts")
 
 @router.get("/")
 def get_posts(
-    status: Optional[str] = Query(None, regex="^(published|draft|archived)$"),
+    status: Optional[str] = Query(None, pattern="^(published|draft|archived)$"),
     include: Optional[List[str]] = Query([]), 
     db: Session = Depends(get_db)
 ):

@@ -47,7 +47,8 @@ class PostSchema(BaseModel):
     title: str
     content: str
     user_id: int
-    user: Optional[UserSummarySchema] = []
+    status: str
+    user: Optional[UserSummarySchema] = None
     tags: Optional[List[TagSchema]] = []
     comments: Optional[List[CommentSchema]] = []
 
